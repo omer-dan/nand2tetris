@@ -1,0 +1,269 @@
+class Shark {
+
+    field int shark_x;          // Horizontal position of the shark.
+    field int currentHeight;    // Vertical position of the shark.
+    field int SEA_HEIGHT;       // Height of the sea level.
+    field int SHARK_HEIGHT;     // Height of the shark.
+
+    /**
+     * Constructor: Initializes a new Shark instance.
+     * 
+     * @param startX The initial horizontal position of the shark.
+     * @param seaHeight The sea level height for reference.
+     * @return The new Shark instance.
+     */
+    constructor Shark new(int startX, int seaHeight) {
+        let SEA_HEIGHT = seaHeight;
+        let SHARK_HEIGHT = 16;
+        let shark_x = startX;
+        let currentHeight = seaHeight + SHARK_HEIGHT + 80;
+        do draw();
+        return this;
+    }
+
+    /**
+     * Disposes of the Shark object by deallocating its memory.
+     */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /**
+     * Draws the shark on the screen at its current position.
+     */
+    method void draw() {
+		var int memAddress; 
+		let memAddress = 16384 + Utility.xyToScreenMap(shark_x, currentHeight);
+		
+		// column 0
+		do Memory.poke(memAddress, -16384);
+		do Memory.poke(memAddress +32, -16384);
+		do Memory.poke(memAddress +64, -16384);
+		do Memory.poke(memAddress +96, -16384);
+		do Memory.poke(memAddress +128, -16384);
+		do Memory.poke(memAddress +160, -16383);
+		do Memory.poke(memAddress +192, -16381);
+		do Memory.poke(memAddress +224, -16257);
+		do Memory.poke(memAddress +256, -16161);
+		do Memory.poke(memAddress +288, -97);
+		do Memory.poke(memAddress +320, 30);
+		do Memory.poke(memAddress +352, 28);
+		do Memory.poke(memAddress +384, 28);
+		do Memory.poke(memAddress +416, 28);
+		do Memory.poke(memAddress +448, 28);
+		do Memory.poke(memAddress +480, 28);
+		do Memory.poke(memAddress +512, 28);
+		do Memory.poke(memAddress +544, 30);
+		do Memory.poke(memAddress +576, -33);
+		do Memory.poke(memAddress +608, 127);
+		do Memory.poke(memAddress +640, 63);
+		do Memory.poke(memAddress +672, -32761);
+		do Memory.poke(memAddress +704, -16383);
+		do Memory.poke(memAddress +736, 24576);
+		do Memory.poke(memAddress +768, 8192);
+		do Memory.poke(memAddress +800, -8192);
+		// column 1
+		do Memory.poke(memAddress +1, 1);
+		do Memory.poke(memAddress +33, 7);
+		do Memory.poke(memAddress +65, 28);
+		do Memory.poke(memAddress +97, 48);
+		do Memory.poke(memAddress +129, 64);
+		do Memory.poke(memAddress +161, 384);
+		do Memory.poke(memAddress +193, 768);
+		do Memory.poke(memAddress +225, 1536);
+		do Memory.poke(memAddress +257, 7168);
+		do Memory.poke(memAddress +289, -4096);
+		do Memory.poke(memAddress +385, -16384);
+		do Memory.poke(memAddress +417, -16384);
+		do Memory.poke(memAddress +545, -16384);
+		do Memory.poke(memAddress +577, -2017);
+		do Memory.poke(memAddress +609, 4108);
+		do Memory.poke(memAddress +641, 6150);
+		do Memory.poke(memAddress +673, 3075);
+		do Memory.poke(memAddress +705, 1792);
+		do Memory.poke(memAddress +737, 448);
+		do Memory.poke(memAddress +769, 112);
+		do Memory.poke(memAddress +801, 31);
+		// column 2
+		do Memory.poke(memAddress +290, 1);
+		do Memory.poke(memAddress +322, 15);
+		do Memory.poke(memAddress +354, 48);
+		do Memory.poke(memAddress +386, 99);
+		do Memory.poke(memAddress +418, 1987);
+		do Memory.poke(memAddress +450, 1024);
+		do Memory.poke(memAddress +482, 2047);
+		do Memory.poke(memAddress +514, 681);
+		do Memory.poke(memAddress +546, 1);
+		do Memory.poke(memAddress +578, 1025);
+		do Memory.poke(memAddress +610, 1707);
+		do Memory.poke(memAddress +642, 2044);
+		// column -1
+		do Memory.poke(memAddress +95, 28672);
+		do Memory.poke(memAddress +127, -4096);
+		do Memory.poke(memAddress +159, -4096);
+		do Memory.poke(memAddress +191, -4096);
+		do Memory.poke(memAddress +223, -4096);
+		do Memory.poke(memAddress +255, -4096);
+		do Memory.poke(memAddress +607, -4096);
+		do Memory.poke(memAddress +639, -4096);
+		do Memory.poke(memAddress +671, -4096);
+		do Memory.poke(memAddress +703, -4096);
+		do Memory.poke(memAddress +735, -4096);
+		do Memory.poke(memAddress +767, 28672);
+
+		return;
+}
+	/**
+     * Erases the shark from the screen by resetting its memory locations to zero.
+     */
+	method void erase() {
+		var int memAddress; 
+		let memAddress = 16384 + Utility.xyToScreenMap(shark_x, currentHeight);
+
+		// column 0
+		do Memory.poke(memAddress, 0);
+		do Memory.poke(memAddress + 32, 0);
+		do Memory.poke(memAddress + 64, 0);
+		do Memory.poke(memAddress + 96, 0);
+		do Memory.poke(memAddress + 128, 0);
+		do Memory.poke(memAddress + 160, 0);
+		do Memory.poke(memAddress + 192, 0);
+		do Memory.poke(memAddress + 224, 0);
+		do Memory.poke(memAddress + 256, 0);
+		do Memory.poke(memAddress + 288, 0);
+		do Memory.poke(memAddress + 320, 0);
+		do Memory.poke(memAddress + 352, 0);
+		do Memory.poke(memAddress + 384, 0);
+		do Memory.poke(memAddress + 416, 0);
+		do Memory.poke(memAddress + 448, 0);
+		do Memory.poke(memAddress + 480, 0);
+		do Memory.poke(memAddress + 512, 0);
+		do Memory.poke(memAddress + 544, 0);
+		do Memory.poke(memAddress + 576, 0);
+		do Memory.poke(memAddress + 608, 0);
+		do Memory.poke(memAddress + 640, 0);
+		do Memory.poke(memAddress + 672, 0);
+		do Memory.poke(memAddress + 704, 0);
+		do Memory.poke(memAddress + 736, 0);
+		do Memory.poke(memAddress + 768, 0);
+		do Memory.poke(memAddress + 800, 0);
+
+		// column 1
+		do Memory.poke(memAddress + 1, 0);
+		do Memory.poke(memAddress + 33, 0);
+		do Memory.poke(memAddress + 65, 0);
+		do Memory.poke(memAddress + 97, 0);
+		do Memory.poke(memAddress + 129, 0);
+		do Memory.poke(memAddress + 161, 0);
+		do Memory.poke(memAddress + 193, 0);
+		do Memory.poke(memAddress + 225, 0);
+		do Memory.poke(memAddress + 257, 0);
+		do Memory.poke(memAddress + 289, 0);
+		do Memory.poke(memAddress + 385, 0);
+		do Memory.poke(memAddress + 417, 0);
+		do Memory.poke(memAddress + 545, 0);
+		do Memory.poke(memAddress + 577, 0);
+		do Memory.poke(memAddress + 609, 0);
+		do Memory.poke(memAddress + 641, 0);
+		do Memory.poke(memAddress + 673, 0);
+		do Memory.poke(memAddress + 705, 0);
+		do Memory.poke(memAddress + 737, 0);
+		do Memory.poke(memAddress + 769, 0);
+		do Memory.poke(memAddress + 801, 0);
+
+		// column 2
+		do Memory.poke(memAddress + 290, 0);
+		do Memory.poke(memAddress + 322, 0);
+		do Memory.poke(memAddress + 354, 0);
+		do Memory.poke(memAddress + 386, 0);
+		do Memory.poke(memAddress + 418, 0);
+		do Memory.poke(memAddress + 450, 0);
+		do Memory.poke(memAddress + 482, 0);
+		do Memory.poke(memAddress + 514, 0);
+		do Memory.poke(memAddress + 546, 0);
+		do Memory.poke(memAddress + 578, 0);
+		do Memory.poke(memAddress + 610, 0);
+		do Memory.poke(memAddress + 642, 0);
+
+		// column -1
+		do Memory.poke(memAddress + 95, 0);
+		do Memory.poke(memAddress + 127, 0);
+		do Memory.poke(memAddress + 159, 0);
+		do Memory.poke(memAddress + 191, 0);
+		do Memory.poke(memAddress + 223, 0);
+		do Memory.poke(memAddress + 255, 0);
+		do Memory.poke(memAddress + 607, 0);
+		do Memory.poke(memAddress + 639, 0);
+		do Memory.poke(memAddress + 671, 0);
+		do Memory.poke(memAddress + 703, 0);
+		do Memory.poke(memAddress + 735, 0);
+		do Memory.poke(memAddress + 767, 0);
+
+		return;
+}
+
+    /**
+     * Checks if the shark has collided with a regular fish.
+     * 
+     * @param f A Fish object to check collision with.
+     * @return True if the shark has collided with the fish; otherwise, false.
+     */
+    method boolean isHit(Fish f) {
+        do erase();
+        do draw();
+
+        if (Math.abs(currentHeight - f.getFishHeight()) < 20) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the shark has collided with a KillFish object.
+     * 
+     * @param kf A KillFish object to check collision with.
+     * @return True if the shark has collided with the KillFish; otherwise, false.
+     */
+    method boolean isHitKf(KillFish kf) {
+        do erase();
+        do draw();
+
+        if (Math.abs(currentHeight - kf.getFishHeight()) < 20) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Moves the shark up by 15 units if within bounds.
+     * Erases the shark's current position, updates its vertical position,
+     * and redraws it.
+     */
+    method void goUp() {
+        do erase();
+        if (currentHeight - 15 < (SEA_HEIGHT - 1)) {
+            // Prevent moving beyond sea level.
+        } else {
+            let currentHeight = currentHeight - 15;
+        }
+        do draw();
+        return;
+    }
+
+    /**
+     * Moves the shark down by 15 units if within bounds.
+     * Erases the shark's current position, updates its vertical position,
+     * and redraws it.
+     */
+    method void goDown() {
+        do erase();
+        if (currentHeight + 15 > 242) {
+            // Prevent moving beyond the lower screen boundary.
+        } else {
+            let currentHeight = currentHeight + 15;
+        }
+        do draw();
+        return;
+    }
+}

@@ -1,0 +1,28 @@
+class Main {
+
+    /**
+     * Entry point of the program. Initializes and runs the SharkRunGame.
+     * 
+     * This function:
+     * - Creates a new instance of the SharkRunGame with an initial game speed.
+     * - Starts the game loop by calling `game.run()`.
+     * - Cleans up resources by calling `game.dispose()` after the game ends.
+     */
+    function void main() {
+        var SharkRunGame game;
+        var int gameSpeed;
+
+        let gameSpeed = 4;
+
+        // Initialize a new game with a starting speed of 4
+        let game = SharkRunGame.new(gameSpeed);
+
+        // Run the game loop
+        do game.run();
+
+        // Dispose of the game resources
+        do game.dispose();
+
+        return;
+    }
+}

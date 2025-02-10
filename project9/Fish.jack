@@ -1,0 +1,234 @@
+class Fish {
+    field int currentPosition;  // Horizontal position of the fish.
+    field int moves_count;      // Number of movements the fish has made.
+    field int FISH_HEIGHT;      // Vertical position of the fish.
+
+    /**
+     * Constructor: Initializes a new Fish instance.
+     * 
+     * @param fishHeight The initial vertical position of the fish.
+     * @return The new Fish instance.
+     */
+    constructor Fish new(int fishHeight) {
+        let FISH_HEIGHT = fishHeight;
+        let moves_count = 0;
+        let currentPosition = 460;
+        do draw();
+        return this;
+    }
+
+    /**
+     * Disposes of the Fish object by deallocating its memory.
+     */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /**
+     * Retrieves the current horizontal position of the fish.
+     * 
+     * @return The current horizontal position.
+     */
+    method int getCurrentPosition() {
+        return currentPosition;
+    }
+
+    /**
+     * Sets the current horizontal position of the fish to 460
+     * and updates its vertical position.
+     * 
+     * @param pos The new vertical position of the fish.
+     */
+    method void setCurrentPositionToStart(int pos) {
+        let currentPosition = 460;
+        let FISH_HEIGHT = pos;
+        return;
+    }
+
+    /**
+     * Retrieves the vertical position of the fish.
+     * 
+     * @return The vertical position of the fish.
+     */
+    method int getFishHeight() {
+        return FISH_HEIGHT;
+    }
+
+    /**
+     * Moves the fish horizontally by reducing its position by a given speed.
+     * Erases the fish from its old position and redraws it at the new position.
+     * 
+     * @param speed The amount by which the fish moves horizontally.
+     * @return The updated movement count.
+     */
+    method int move(int speed) {
+        do erase();
+        let currentPosition = currentPosition - speed;
+        do draw();
+
+        if (moves_count > 55) {
+            let moves_count = 0;
+        } else {
+            let moves_count = moves_count + 1;
+        }
+
+        return moves_count;
+    }
+
+	 /**
+     * Draws the fish on the screen by manipulating memory.
+     */
+	method void draw(){
+		
+		// Draw the fish
+		// location : x=position, y=Fish height
+
+		var int memAddress; 
+		let memAddress = 16384 + Utility.xyToScreenMap(currentPosition, FISH_HEIGHT);
+		// column 0
+		do Memory.poke(memAddress +96, 0);
+		do Memory.poke(memAddress +128, ~32767);
+		do Memory.poke(memAddress +160, -16384);
+		do Memory.poke(memAddress +192, 16384);
+		do Memory.poke(memAddress +224, 16384);
+		do Memory.poke(memAddress +256, 16384);
+		do Memory.poke(memAddress +288, 16384);
+		do Memory.poke(memAddress +320, 16384);
+		do Memory.poke(memAddress +352, 16384);
+		do Memory.poke(memAddress +384, -16384);
+		do Memory.poke(memAddress +416, 0);
+		do Memory.poke(memAddress +448, 0);
+		do Memory.poke(memAddress +480, 0);
+		do Memory.poke(memAddress +512, 0);
+		do Memory.poke(memAddress +544, 0);
+		do Memory.poke(memAddress +576, 0);
+		do Memory.poke(memAddress +608, 0);
+		// column 1
+		do Memory.poke(memAddress +1, -64);
+		do Memory.poke(memAddress +33, -32);
+		do Memory.poke(memAddress +65, -32736);
+		do Memory.poke(memAddress +97, -32705);
+		do Memory.poke(memAddress +129, 1);
+		do Memory.poke(memAddress +161, 0);
+		do Memory.poke(memAddress +193, 0);
+		do Memory.poke(memAddress +225, 0);
+		do Memory.poke(memAddress +257, 14);
+		do Memory.poke(memAddress +289, 14);
+		do Memory.poke(memAddress +321, 0);
+		do Memory.poke(memAddress +353, 0);
+		do Memory.poke(memAddress +385, 1);
+		do Memory.poke(memAddress +417, 3);
+		do Memory.poke(memAddress +449, -32514);
+		do Memory.poke(memAddress +481, -32384);
+		do Memory.poke(memAddress +513, -256);
+		do Memory.poke(memAddress +545, 0);
+		do Memory.poke(memAddress +577, 0);
+		do Memory.poke(memAddress +609, 0);
+		do Memory.poke(memAddress +641, 0);
+		do Memory.poke(memAddress +673, 0);
+		do Memory.poke(memAddress +705, 0);
+		// column 2
+		do Memory.poke(memAddress +66, 224);
+		do Memory.poke(memAddress +98, 224);
+		do Memory.poke(memAddress +130, 249);
+		do Memory.poke(memAddress +162, 239);
+		do Memory.poke(memAddress +194, 192);
+		do Memory.poke(memAddress +226, 192);
+		do Memory.poke(memAddress +258, 192);
+		do Memory.poke(memAddress +290, 192);
+		do Memory.poke(memAddress +322, 192);
+		do Memory.poke(memAddress +354, 192);
+		do Memory.poke(memAddress +386, 254);
+		do Memory.poke(memAddress +418, 226);
+		do Memory.poke(memAddress +450, 227);
+		do Memory.poke(memAddress +482, 0);
+		do Memory.poke(memAddress +514, 0);
+		do Memory.poke(memAddress +546, 0);
+		do Memory.poke(memAddress +578, 0);
+		do Memory.poke(memAddress +610, 0);
+		do Memory.poke(memAddress +642, 0);
+
+		return;
+	}
+	
+	 /**
+     * Erases the fish from the screen by resetting its memory locations to zero.
+     */
+	method void erase(){
+		
+		// Erase the fish
+		// location : x=position, y=Fish height
+
+   		var int memAddress; 
+		let memAddress = 16384 + Utility.xyToScreenMap(currentPosition, FISH_HEIGHT);
+
+		// Reset all affected memory locations to 0
+		// Column 0
+		do Memory.poke(memAddress + 96, 0);
+		do Memory.poke(memAddress + 128, 0);
+		do Memory.poke(memAddress + 160, 0);
+		do Memory.poke(memAddress + 192, 0);
+		do Memory.poke(memAddress + 224, 0);
+		do Memory.poke(memAddress + 256, 0);
+		do Memory.poke(memAddress + 288, 0);
+		do Memory.poke(memAddress + 320, 0);
+		do Memory.poke(memAddress + 352, 0);
+		do Memory.poke(memAddress + 384, 0);
+		do Memory.poke(memAddress + 416, 0);
+		do Memory.poke(memAddress + 448, 0);
+		do Memory.poke(memAddress + 480, 0);
+		do Memory.poke(memAddress + 512, 0);
+		do Memory.poke(memAddress + 544, 0);
+		do Memory.poke(memAddress + 576, 0);
+		do Memory.poke(memAddress + 608, 0);
+
+		// Column 1
+		do Memory.poke(memAddress + 1, 0);
+		do Memory.poke(memAddress + 33, 0);
+		do Memory.poke(memAddress + 65, 0);
+		do Memory.poke(memAddress + 97, 0);
+		do Memory.poke(memAddress + 129, 0);
+		do Memory.poke(memAddress + 161, 0);
+		do Memory.poke(memAddress + 193, 0);
+		do Memory.poke(memAddress + 225, 0);
+		do Memory.poke(memAddress + 257, 0);
+		do Memory.poke(memAddress + 289, 0);
+		do Memory.poke(memAddress + 321, 0);
+		do Memory.poke(memAddress + 353, 0);
+		do Memory.poke(memAddress + 385, 0);
+		do Memory.poke(memAddress + 417, 0);
+		do Memory.poke(memAddress + 449, 0);
+		do Memory.poke(memAddress + 481, 0);
+		do Memory.poke(memAddress + 513, 0);
+		do Memory.poke(memAddress + 545, 0);
+		do Memory.poke(memAddress + 577, 0);
+		do Memory.poke(memAddress + 609, 0);
+		do Memory.poke(memAddress + 641, 0);
+		do Memory.poke(memAddress + 673, 0);
+		do Memory.poke(memAddress + 705, 0);
+
+		// Column 2
+		do Memory.poke(memAddress + 66, 0);
+		do Memory.poke(memAddress + 98, 0);
+		do Memory.poke(memAddress + 130, 0);
+		do Memory.poke(memAddress + 162, 0);
+		do Memory.poke(memAddress + 194, 0);
+		do Memory.poke(memAddress + 226, 0);
+		do Memory.poke(memAddress + 258, 0);
+		do Memory.poke(memAddress + 290, 0);
+		do Memory.poke(memAddress + 322, 0);
+		do Memory.poke(memAddress + 354, 0);
+		do Memory.poke(memAddress + 386, 0);
+		do Memory.poke(memAddress + 418, 0);
+		do Memory.poke(memAddress + 450, 0);
+		do Memory.poke(memAddress + 482, 0);
+		do Memory.poke(memAddress + 514, 0);
+		do Memory.poke(memAddress + 546, 0);
+		do Memory.poke(memAddress + 578, 0);
+		do Memory.poke(memAddress + 610, 0);
+		do Memory.poke(memAddress + 642, 0);
+
+		return;
+	}
+}

@@ -1,0 +1,517 @@
+// This class manages all aspects of the SharkRunGame, including the shark, fish, score,
+// game speed, and user input for controlling the game lifecycle.
+class SharkRunGame{
+
+	// Reference to the Shark instance used in the game.
+	field Shark shark;
+	// The x-coordinate at which the Shark will be placed.
+	field int SHARK_X;
+
+	// Random number generator (linear feedback shift register implementation).
+	field LFSR32Rand random;
+
+	// The speed at which the game runs (movement speed of fish, etc.).
+	field int gameSpeed;
+	// The current score of the game.
+	field int score;
+	// The record high score across all played games.
+	field int highScore;
+	// The number of games that have been played so far.
+	field int numGames;
+	// Flag indicating whether the game is over or not.
+	field boolean gOver;
+
+	// Array to hold references to the Fish objects.
+	field Array fishes;
+	// The number of fish currently active.
+	field int n_fishes;
+	// A counter used to track fish movements or transitions.
+	field int moves_count;
+	// Tracks the index of the current fish being handled.
+	field int current_fish;
+
+	// The total number of regular (non-kill) fish that have been generated.
+	field int regular_fish_count;
+	// Flag indicating whether a KillFish is currently active.
+	field boolean kill_fish;
+	// Reference to the KillFish object if one is active.
+	field KillFish kf;
+	// A variable used to hold random speeds (not explicitly used in the code).
+	field int randomSpeed;
+
+	// The vertical position (y-coordinate) where the "sea" line is drawn.
+	field int SEA_HEIGHT;
+	// Frames per second for the game.
+	field int GAME_FPS;
+	// The maximum number of fish allowed to exist at one time.
+	field int MAX_FISH;
+		
+	// A short empty string used for clearing output.
+	field String emptyString;
+	// A longer empty string used for clearing output over larger areas.
+	field String emptyStringLong;
+	// A message displayed when the game is over.
+	field String gameOverString;
+	// A label for printing high score text.
+	field String highScoreString;
+	// A label for printing score text.
+	field String scoreString;
+	// A label for printing the number of games played.
+	field String numGamesString;
+	
+	// Constructor to initialize game variables and set up the screen output.
+	constructor SharkRunGame new(int startGameSpeed){
+		
+		// Initialize constants and strings.
+		let GAME_FPS = 30;
+		let MAX_FISH = 4;
+		let SEA_HEIGHT = 35;
+		let emptyStringLong = "                                 ";
+		let emptyString = "             ";
+		let gameOverString = "GAME OVER - Restart = SPACEBAR";
+		
+		// Set initial x-position of the shark.
+		let SHARK_X = 50;
+		// Create the Shark instance at the specified x-position and sea height.
+		let shark = Shark.new(SHARK_X, SEA_HEIGHT);
+
+		// Set the starting game speed.
+		let gameSpeed = startGameSpeed;
+
+		// Initialize score, games played, high score, and related strings.
+		let score = 0;
+		let numGames = 1;
+		let highScore = 0;
+		let highScoreString = "HIGH SCORE: ";
+		let gOver = false;
+		let numGamesString = "GAMES: ";
+		let scoreString = "SCORE: ";
+		
+		// Create an Array to store fish and reset counts.
+		let fishes = Array.new(MAX_FISH);
+		let n_fishes = 0;
+		let moves_count = 0;
+		let current_fish = 0;
+		let regular_fish_count = 0;
+		let kill_fish = false;
+
+		// Instantiate the random number generator.
+		let random = LFSR32Rand.new();
+		
+		// Print the initial score and game count to the screen.
+		do Output.moveCursor(1, 29);
+		do Output.printString(scoreString);
+		do Output.printInt(score);
+
+		do Output.moveCursor(1, 48);
+		do Output.printString(numGamesString);
+		do Output.printInt(numGames);
+		
+		return this;
+	}
+	
+	// Returns the current speed of the game.
+	method int getSpeed(){
+		return gameSpeed;
+	}
+
+	// Disposes of this instance, freeing resources associated with the shark
+	// and then de-allocating this game object.
+	method void dispose(){
+		var Fish f;
+		var int i;
+		let i = 0;
+
+		while(fishes[i]) {
+			do f.dispose();
+			let i = i + 1;
+		}
+		
+		do shark.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
+	
+	// Prints the "Game Over" message on the screen.
+	method void printGameOver(){
+		do Output.moveCursor(11, 18);
+		do Output.printString(gameOverString);
+		do Output.println();
+		return;
+	}
+
+	// Restarts the game by resetting scores, removing fish, and starting again.
+	method void restartGame(){
+		var int iterator;
+		var Fish f;
+
+		// Increment the number of games played.
+		let numGames = numGames + 1;
+
+		// Clear and reprint the high score and games count on the screen.
+		do Output.moveCursor(1, 48);
+		do Output.printString(emptyString);
+		do Output.moveCursor(1, 14);
+		do Output.printString(emptyString);
+		do Output.moveCursor(1, 2);
+		do Output.printString(emptyString);
+		do Output.moveCursor(1, 2);
+		do Output.printString(highScoreString);
+		do Output.moveCursor(1, 14);
+		do Output.printInt(highScore);
+		do Output.moveCursor(1, 48);
+		do Output.printString(numGamesString);
+		do Output.printInt(numGames);
+
+		// Reset the current score and game-over flag.
+		let score = 0;
+		let gOver = false;
+
+		// Clear the game-over message area on the screen.
+		do Output.moveCursor(11, 18);
+		do Output.printString(emptyStringLong);
+		do Output.println();
+
+		// Remove (dispose of) existing fish and clear the array.
+		let iterator = 0;
+		while (iterator < MAX_FISH) {
+			if ((iterator < n_fishes) & (~(fishes[iterator] = null))) {
+				let f = fishes[iterator];
+				do f.erase();
+				do f.dispose();
+				let fishes[iterator] = null;
+			}
+			let iterator = iterator + 1;
+		}
+		let n_fishes = 0;
+		let regular_fish_count = 0;
+
+		// Remove a kill fish if one exists.
+		if (~(kf = null)) {
+			do kf.erase();
+			do kf.dispose();
+			let kf = null;
+		}
+		let kill_fish = false;
+
+		// Start the main game loop again.
+		do run();
+		return;
+	}
+	
+	// Draws a line representing the "sea" in the game.
+	method void drawSea(){
+		do Screen.setColor(true);
+		do Screen.drawLine(0, SEA_HEIGHT, 511, SEA_HEIGHT);
+		return;
+	}
+	
+	// Creates or repositions a regular fish at the specified array slot (loc).
+	method void newFish(int loc){
+		var Fish f;
+
+		// Increment the count of regular fish generated.
+		let regular_fish_count = regular_fish_count + 1;
+		// If the location index is out of bounds, do nothing.
+		if (~(loc < MAX_FISH)) {
+			return;
+		}
+
+		// Retrieve the fish currently at the slot.
+		let f = fishes[loc];
+		// If a fish already exists there, just reuse/reposition it.
+		if (~(f = null)) {
+			do f.erase();
+			do f.setCurrentPositionToStart(random.randRange(40, 240));
+			do f.draw();
+		}
+		// If there was no fish, create a new fish instance.
+		if (f = null) {
+			let fishes[loc] = Fish.new(random.randRange(40, 240));
+		}
+
+		// If this slot is at the end of the current fish list, increment the total count.
+		if (loc = n_fishes) {
+			let n_fishes = n_fishes + 1;
+		}
+		return;
+	}
+
+	// Draws a cloud at the specified location on the screen.
+	method void drawCloud(int location) {
+		var int memAddress; 
+		let memAddress = 16384+location;
+		// column 0
+		do Memory.poke(memAddress, -8192);
+		do Memory.poke(memAddress +32, 14336);
+		do Memory.poke(memAddress +64, 3072);
+		do Memory.poke(memAddress +96, 1024);
+		do Memory.poke(memAddress +128, 1536);
+		do Memory.poke(memAddress +160, 384);
+		do Memory.poke(memAddress +192, 224);
+		do Memory.poke(memAddress +224, 56);
+		do Memory.poke(memAddress +256, 14);
+		do Memory.poke(memAddress +288, 1);
+		do Memory.poke(memAddress +320, 0);
+		do Memory.poke(memAddress +384, 3);
+		do Memory.poke(memAddress +416, -2);
+		// column 1
+		do Memory.poke(memAddress +1, 3);
+		do Memory.poke(memAddress +33, 14);
+		do Memory.poke(memAddress +65, 252);
+		do Memory.poke(memAddress +97, 160);
+		do Memory.poke(memAddress +129, 384);
+		do Memory.poke(memAddress +161, 8064);
+		do Memory.poke(memAddress +193, -3648);
+		do Memory.poke(memAddress +225, -32704);
+		do Memory.poke(memAddress +257, 64);
+		do Memory.poke(memAddress +417, -128);
+		// column 2
+		do Memory.poke(memAddress +194, 0);
+		do Memory.poke(memAddress +226, 1);
+		do Memory.poke(memAddress +258, 1);
+		do Memory.poke(memAddress +290, 3);
+		do Memory.poke(memAddress +322, 2);
+		do Memory.poke(memAddress +354, 2);
+		do Memory.poke(memAddress +386, 4);
+		do Memory.poke(memAddress +418, 7);
+		// column 3
+		// column -1
+		do Memory.poke(memAddress +319, ~32767);
+		do Memory.poke(memAddress +351, 16384);
+		return;
+	}
+
+	// Updates the stored high score value and refreshes it on the screen.
+	method void updateHighScore(int newHighScore)
+	{
+		let highScore = newHighScore;
+
+		do Output.moveCursor(1, 14);
+		do Output.printString(emptyString);
+		do Output.moveCursor(1, 2);
+		do Output.printString(emptyString);
+		do Output.moveCursor(1, 2);
+		do Output.printString(highScoreString);
+		do Output.moveCursor(1, 14);
+		do Output.printInt(highScore);
+
+		return;
+	}
+
+	// Creates a new KillFish if none exists; otherwise repositions the existing one
+	// when it moves offscreen.
+	method void newKillFish(){
+		var int temp;
+
+		// Check if a kill fish is already active; if not, create it.
+		if (~(kill_fish)) {
+			let kf = KillFish.new(random.randRange(40, 240));
+			let kill_fish = true;
+		}
+		else
+		{
+			// If the kill fish has moved offscreen, reposition it and redraw.
+			if (kf.getCurrentPosition() < 10)
+			{
+				do kf.erase();
+				do kf.setCurrentPositionToStart(random.randRange(40, 240));
+				do kf.draw();
+			}
+		}
+		return;
+	}
+	
+	// Manages the main game logic in each cycle, including fish movement, collisions,
+	// score updates, and kill fish behavior.
+	method void handleGame(){
+		var Fish f;
+		var Fish fnext;
+
+		let current_fish = 0;
+
+		// Loop through each active fish.
+		while (current_fish < n_fishes) {
+
+			let f = fishes[current_fish];
+
+			// If enough regular fish have been spawned, attempt to spawn a kill fish.
+			if (regular_fish_count > 4)
+			{
+				do newKillFish();
+			}
+
+			// If a kill fish exists, move it with some random variation in speed.
+			if (kill_fish) {
+				do kf.move(gameSpeed + random.randRange(-1,2));
+			}
+
+			// Retrieve the next fish in the array for possible future logic.
+			if (current_fish + 1 < n_fishes) {
+				let fnext = fishes[current_fish + 1];
+			} else {
+				let fnext = null;
+			}
+
+			// Move the current fish by the game speed and record its move count.
+			let moves_count = f.move(gameSpeed);
+
+			// Redraw the shark to ensure correct rendering order.
+			do shark.draw();
+
+			// If the fish moved beyond a certain count, optionally add a new fish.
+			if (moves_count > 55) {
+				if (fnext = null) {
+					do newFish(current_fish + 1);
+				}
+			}
+
+			// If the fish goes offscreen (to the left), recycle that slot and penalize score.
+			if (f.getCurrentPosition() < -10) {
+				do newFish(current_fish);
+				let score = score - 75;
+			}
+
+			// Check collision between the shark and a regular fish for scoring.
+			if (f.getCurrentPosition() < 90 & f.getCurrentPosition() > 40) {
+				if (shark.isHit(f)) {
+					do newFish(current_fish);
+					let score = score + 50;
+					// Update high score if we've exceeded it.
+					if (score > highScore)
+					{
+						do updateHighScore(score);
+					}
+				}	
+			}
+
+			// Check collision between the shark and kill fish for game over condition.
+			if (kf.getCurrentPosition() < 90 & f.getCurrentPosition() > 40) {
+				let gOver = shark.isHitKf(kf);
+			}
+
+			// Update the score display on the screen.
+			do Output.moveCursor(1, 29);
+			do Output.printString(emptyString);
+			do Output.moveCursor(1, 29);
+			do Output.printString(scoreString);
+			do Output.printInt(score);
+
+			// If the score goes negative, the game ends.
+			if (score < 0)
+			{
+				let gOver = true;
+				return;
+			}
+
+			let current_fish = current_fish + 1;
+		}
+
+		// Wait to maintain a consistent frame rate.
+		do Sys.wait(1000 / GAME_FPS);
+		return;
+	}
+	
+	// The main game loop. Handles user input and transitions through different game states.
+	method void run(){
+		var char key;
+		var boolean exit;
+        
+		let exit = false;
+        
+		// Draw the sea and some decorative clouds.
+		do drawSea();
+		do drawCloud(Utility.xyToScreenMap(200,15));
+		do drawCloud(Utility.xyToScreenMap(351,11));
+		do drawCloud(Utility.xyToScreenMap(470,10));
+        
+		// Prompt the player to press SPACEBAR to start.
+		do Output.moveCursor(12, 25);
+		do Output.printString("SPACEBAR");
+		while (~(key = 32)) {
+			let key = Keyboard.keyPressed();
+		}
+		do Output.moveCursor(12, 25);
+		do Output.printString(emptyString);
+
+		// Create the initial fish.
+		do newFish(0);
+
+		// Outer loop for handling input and checking game exit condition.
+		while(~exit){
+			
+			// Inner loop to handle game logic repeatedly when no key is pressed.
+			while((key = 0) & (~exit)){
+				let key = Keyboard.keyPressed();
+				do handleGame();
+				if(gOver){
+					do printGameOver();
+					let exit = true;
+				}
+			}
+			
+			// If ESC is pressed (ASCII 140 in this environment), end the game.
+			if(key = 140){
+				let exit = true;
+				let gOver = true;
+			}
+
+			// If the UP arrow is pressed (ASCII 131), move the shark up.
+			if(key = 131)
+			{
+				do shark.goUp();
+			}
+			
+			// If the DOWN arrow is pressed (ASCII 133), move the shark down.
+			if(key = 133)
+			{
+				do shark.goDown();
+			}
+			
+			// If 'i' (ASCII 105) is pressed, increase game speed.
+			if(key = 105){   
+				let gameSpeed = gameSpeed + 1;
+			}
+
+			// If 'd' (ASCII 100) is pressed, decrease game speed (not below 1).
+			if(key = 100){   
+				if (gameSpeed > 1)
+				{
+					let gameSpeed = gameSpeed - 1;
+				}				
+			}
+			
+			// If 'p' (ASCII 112) is pressed, add 100 points to the score (cheat code).
+			if(key = 112){   
+				let score = score + 100;
+				if (score > highScore)
+				{
+					do updateHighScore(score);
+				}
+			}
+
+			// Another inner loop to continue the game when a key is pressed, until it goes back to 0 or exit is triggered.
+			while (~(key = 0) & (~exit)) {
+				let key = Keyboard.keyPressed();
+				do handleGame();
+				if(gOver){
+					do printGameOver();
+					let exit = true;
+				}
+			}
+		}
+
+		// Wait for SPACEBAR again to potentially restart the game if it's over.
+		while (~(key = 32))
+		{			
+			let key = Keyboard.keyPressed();
+			if(key = 32){   // Restart the game if SPACEBAR is pressed and the game is over.
+				if (gOver)
+				{
+					do restartGame();
+				}
+			}
+		}
+		return;
+	}
+}

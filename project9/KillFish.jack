@@ -1,0 +1,179 @@
+
+class KillFish {
+
+    field int currentPosition;  // Horizontal position of the kill fish.
+    field int moves_count;      // Number of movements the kill fish has made.
+    field int FISH_HEIGHT;      // Vertical position of the kill fish.
+
+    /**
+     * Constructor: Initializes a new KillFish instance.
+     * 
+     * @param fishHeight The initial vertical position of the kill fish.
+     * @return The new KillFish instance.
+     */
+    constructor KillFish new(int fishHeight) {
+        let FISH_HEIGHT = fishHeight;
+        let moves_count = 0;
+        let currentPosition = 460;
+        do draw();
+        return this;
+    }
+
+    /**
+     * Disposes of the KillFish object by deallocating its memory.
+     */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /**
+     * Retrieves the current horizontal position of the kill fish.
+     * 
+     * @return The current horizontal position.
+     */
+    method int getCurrentPosition() {
+        return currentPosition;
+    }
+
+    /**
+     * Sets the current horizontal position of the kill fish to 460
+     * and updates its vertical position.
+     * 
+     * @param pos The new vertical position of the kill fish.
+     */
+    method void setCurrentPositionToStart(int pos) {
+        let currentPosition = 460;
+        let FISH_HEIGHT = pos;
+        return;
+    }
+
+    /**
+     * Retrieves the vertical position of the kill fish.
+     * 
+     * @return The vertical position of the kill fish.
+     */
+    method int getFishHeight() {
+        return FISH_HEIGHT;
+    }
+
+    /**
+     * Draws the kill fish on the screen by manipulating memory.
+     */
+   method void draw(){
+		
+		// Draw the fish
+		// location : x=position, y=Fish height
+
+		var int memAddress; 
+		let memAddress = 16384 + Utility.xyToScreenMap(currentPosition, FISH_HEIGHT);
+		
+		// column 0
+		do Memory.poke(memAddress +32, ~32767);
+		do Memory.poke(memAddress +64, 19456);
+		do Memory.poke(memAddress +96, 17504);
+		do Memory.poke(memAddress +128, -320);
+		do Memory.poke(memAddress +160, 9088);
+		do Memory.poke(memAddress +192, 8576);
+		do Memory.poke(memAddress +224, 1760);
+		do Memory.poke(memAddress +256, 1663);
+		do Memory.poke(memAddress +288, 113);
+		do Memory.poke(memAddress +320, 32);
+		do Memory.poke(memAddress +352, 32);
+		do Memory.poke(memAddress +384, 8608);
+		do Memory.poke(memAddress +416, 14560);
+		do Memory.poke(memAddress +448, 18528);
+		do Memory.poke(memAddress +480, -80);
+		do Memory.poke(memAddress +512, 18440);
+		do Memory.poke(memAddress +544, 18444);
+		do Memory.poke(memAddress +576, 2048);
+		// column 1
+		do Memory.poke(memAddress +1, 49);
+		do Memory.poke(memAddress +33, 25);
+		do Memory.poke(memAddress +65, 1548);
+		do Memory.poke(memAddress +97, 516);
+		do Memory.poke(memAddress +129, 831);
+		do Memory.poke(memAddress +161, 356);
+		do Memory.poke(memAddress +193, 244);
+		do Memory.poke(memAddress +225, 64);
+		do Memory.poke(memAddress +257, 64);
+		do Memory.poke(memAddress +289, 4088);
+		do Memory.poke(memAddress +321, 96);
+		do Memory.poke(memAddress +353, 32);
+		do Memory.poke(memAddress +385, 23);
+		do Memory.poke(memAddress +417, 28);
+		do Memory.poke(memAddress +449, 22);
+		do Memory.poke(memAddress +481, 33);
+		do Memory.poke(memAddress +513, 32);
+	
+		return;
+	}
+	
+	 /**
+     * Erases the kill fish from the screen by resetting its memory locations to zero.
+     */
+	method void erase(){
+		
+		// Erase the fish
+		// location : x=position, y=Fish height
+
+   		var int memAddress; 
+		let memAddress = 16384 + Utility.xyToScreenMap(currentPosition, FISH_HEIGHT);
+	
+		// Reset all affected memory locations to 0
+		// Column 0
+		do Memory.poke(memAddress + 32, 0);
+		do Memory.poke(memAddress + 64, 0);
+		do Memory.poke(memAddress + 96, 0);
+		do Memory.poke(memAddress + 128, 0);
+		do Memory.poke(memAddress + 160, 0);
+		do Memory.poke(memAddress + 192, 0);
+		do Memory.poke(memAddress + 224, 0);
+		do Memory.poke(memAddress + 256, 0);
+		do Memory.poke(memAddress + 288, 0);
+		do Memory.poke(memAddress + 320, 0);
+		do Memory.poke(memAddress + 352, 0);
+		do Memory.poke(memAddress + 384, 0);
+		do Memory.poke(memAddress + 416, 0);
+		do Memory.poke(memAddress + 448, 0);
+		do Memory.poke(memAddress + 480, 0);
+		do Memory.poke(memAddress + 512, 0);
+		do Memory.poke(memAddress + 544, 0);
+		do Memory.poke(memAddress + 576, 0);
+
+		// Column 1
+		do Memory.poke(memAddress + 1, 0);
+		do Memory.poke(memAddress + 33, 0);
+		do Memory.poke(memAddress + 65, 0);
+		do Memory.poke(memAddress + 97, 0);
+		do Memory.poke(memAddress + 129, 0);
+		do Memory.poke(memAddress + 161, 0);
+		do Memory.poke(memAddress + 193, 0);
+		do Memory.poke(memAddress + 225, 0);
+		do Memory.poke(memAddress + 257, 0);
+		do Memory.poke(memAddress + 289, 0);
+		do Memory.poke(memAddress + 321, 0);
+		do Memory.poke(memAddress + 353, 0);
+		do Memory.poke(memAddress + 385, 0);
+		do Memory.poke(memAddress + 417, 0);
+		do Memory.poke(memAddress + 449, 0);
+		do Memory.poke(memAddress + 481, 0);
+		do Memory.poke(memAddress + 513, 0);
+
+
+		return;
+	}
+
+    /**
+     * Moves the kill fish horizontally by reducing its position by a given speed.
+     * Erases the kill fish from its old position and redraws it at the new position.
+     * 
+     * @param speed The amount by which the kill fish moves horizontally.
+     */
+    method void move(int speed) {
+        do erase();
+        let currentPosition = currentPosition - speed;
+        do draw();
+        return;
+    }
+}
