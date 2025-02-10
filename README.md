@@ -1,3 +1,5 @@
-# nand2tetris - by Omer Dan and Amit Kaminsky
-Hi, this is mine and Amit Kaminsky's work (https://github.com/AmitKaminsky) on the course nand2tetris.
-Feel free to use it however you want to :)
+# nand2tetris – by Omer Dan and Amit Kaminsky
+
+Hi! This repository contains our work on the nand2tetris course, created by Omer Dan and [@AmitKaminsky](https://github.com/AmitKaminsky).
+
+Feel free to use it however you’d like! 😊
